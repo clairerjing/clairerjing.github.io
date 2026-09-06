@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claire Jing</title>
+<meta name="description" content="Claire Jing — Mathematics and Computing at Georgia Tech.">
+<meta property="og:title" content="Claire Jing">
+<meta property="og:description" content="Mathematics and Computing at Georgia Tech.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23b83a72' stroke-width='2'/%3E%3Ccircle cx='16' cy='8' r='2.6' fill='%237a3bb5'/%3E%3C/svg%3E">
+
+<!-- Open Sauce Sans (OFL) via Fontsource; Arimo via Google Fonts -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/open-sauce-sans@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/open-sauce-sans@5/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/open-sauce-sans@5/800.css">
+<link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   Claire Jing — personal site
+   Palette: black ground, dark purple + dark pink decoration,
+   white for anything that has to be read.
+   Visual language: points -> connections -> waves -> music.
+   ========================================================== */
+:root{
+  --bg:#000;
+  --w:#fff;
+  --w2:rgba(255,255,255,.64);
+  --w3:rgba(255,255,255,.36);
+  --line:rgba(255,255,255,.13);
+
+  --vio:#5b2b8a;
+  --vio2:#7a3bb5;
+  --vio-dim:#2b1442;
+  --pnk:#8e2050;
+  --pnk2:#b83a72;
+  --pnk-dim:#3d0f24;
+
+  --head:'Open Sauce Sans','Arimo',system-ui,sans-serif;
+  --body:'Arimo','Helvetica Neue',Arial,sans-serif;
+
+  --navh:76px;
+  --footh:54px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--w);
+  font-family:var(--body);font-size:16px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:var(--head);font-weight:800;margin:0;line-height:1.15;letter-spacing:-.01em}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--pnk2);outline-offset:3px;border-radius:2px}
+[tabindex="-1"]:focus{outline:none}
+.skip{position:fixed;left:-9999px;top:0;z-index:99;background:#111;padding:.6rem 1rem}
+.skip:focus{left:12px;top:12px}
+
+/* ---------------- waveform navigation ---------------- */
+#nav{
+  position:fixed;inset:0 0 auto 0;height:var(--navh);z-index:40;
+  background:linear-gradient(to bottom,rgba(0,0,0,.96) 60%,rgba(0,0,0,0));
+  opacity:0;transform:translateY(-14px);pointer-events:none;
+  transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1);
+}
+body.revealed #nav{opacity:1;transform:none;pointer-events:auto}
+#nav svg{display:block;width:100%;height:44px}
+#wavepath{fill:none;stroke:url(#wg);stroke-width:1.6;stroke-linecap:round}
+#playhead{fill:var(--w);filter:drop-shadow(0 0 6px var(--pnk2))}
+#navbtns{
+  position:absolute;inset:auto 0 6px 0;display:flex;
+  padding:0 clamp(12px,4vw,48px);
+}
+#navbtns button{
+  flex:1;font-family:var(--head);font-weight:700;
+  font-size:clamp(9px,1.5vw,11.5px);letter-spacing:.16em;
+  color:var(--w3);padding:2px 0;transition:color .25s;
+}
+#navbtns button:hover,#navbtns button[aria-current="page"]{color:var(--w)}
+#brand{
+  position:fixed;top:9px;left:clamp(12px,4vw,48px);z-index:41;
+  font-family:var(--head);font-weight:800;font-size:14px;letter-spacing:.02em;text-decoration:none;
+  opacity:0;transition:opacity .7s .2s;pointer-events:none;
+}
+body.revealed #brand{opacity:1;pointer-events:auto}
+
+/* ---------------- contact strip ---------------- */
+#contact{
+  position:fixed;inset:auto 0 0 0;height:var(--footh);z-index:40;
+  display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,30px);
+  background:linear-gradient(to top,rgba(0,0,0,.96) 55%,rgba(0,0,0,0));
+  opacity:0;pointer-events:none;transition:opacity .7s .35s;
+}
+body.revealed #contact{opacity:1;pointer-events:auto}
+#contact a{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--w3);text-decoration:none;font-size:12.5px;
+  transition:color .22s;
+}
+#contact a:hover{color:var(--w)}
+#contact svg{width:16px;height:16px;flex:none}
+#contact .lbl{display:none}
+@media (min-width:900px){#contact .lbl{display:inline}}
+
+/* ---------------- page shell ---------------- */
+#main{position:relative;min-height:100%}
+.page{
+  display:none;
+  padding:calc(var(--navh) + 18px) clamp(16px,5vw,64px) calc(var(--footh) + 40px);
+  opacity:0;transform:translateY(20px);
+  transition:opacity .44s ease,transform .44s cubic-bezier(.2,.7,.3,1);
+}
+.page.live{display:block}
+.page.on{opacity:1;transform:none}
+.page.out{opacity:0;transform:translateY(-16px)}
+@media (prefers-reduced-motion:reduce){
+  .page,#nav,#contact,#brand{transition-duration:.01ms}
+}
+
+/* ---------------- home ---------------- */
+#pg-home{padding-top:0;min-height:100vh}
+#pg-home.live{display:flex;align-items:center}
+.stage{
+  display:flex;align-items:center;gap:0;width:100%;
+  padding:calc(var(--navh)) 0 var(--footh);
+}
+.viz{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center}
+#canvasWrap{width:100%;max-width:640px;aspect-ratio:1/1;position:relative}
+#perc{width:100%;height:100%;display:block}
+
+.control{width:100%;max-width:460px;margin-top:20px}
+.readout{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.14em;
+  color:var(--w3);margin-bottom:10px;
+}
+.readout b{color:var(--w);font-variant-numeric:tabular-nums;font-size:13px;letter-spacing:.04em}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:22px;background:none;cursor:grab;
+}
+input[type=range]:active{cursor:grabbing}
+input[type=range]::-webkit-slider-runnable-track{
+  height:2px;background:linear-gradient(90deg,var(--vio),var(--pnk));border-radius:2px;
+}
+input[type=range]::-moz-range-track{height:2px;background:linear-gradient(90deg,var(--vio),var(--pnk));border-radius:2px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--w);margin-top:-6.5px;box-shadow:0 0 12px var(--pnk2);
+}
+input[type=range]::-moz-range-thumb{
+  width:15px;height:15px;border:0;border-radius:50%;background:var(--w);box-shadow:0 0 12px var(--pnk2);
+}
+.hint{
+  margin-top:12px;font-size:12.5px;color:var(--w3);text-align:center;
+  transition:opacity .5s;
+}
+body.revealed .hint{opacity:0}
+.hint em{font-style:normal;color:var(--pnk2)}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.hint.nudge{animation:pulse 1.9s ease-in-out infinite}
+
+/* the identity panel slides in from zero width */
+.idpanel{
+  flex:0 0 0;opacity:0;overflow:hidden;min-width:0;
+  transition:flex-basis .95s cubic-bezier(.2,.7,.3,1),opacity .6s .35s;
+}
+body.revealed .idpanel{flex-basis:min(42%,430px);opacity:1;padding-left:clamp(20px,4vw,52px)}
+@media (max-width:860px){
+  #pg-home.live{align-items:flex-start}
+  .stage{flex-direction:column}
+  body.revealed .idpanel{flex-basis:auto;width:100%;padding:36px 0 0}
+}
+
+/* ---------------- identity card + musical staff ---------------- */
+.idcard h1{
+  font-size:clamp(30px,4.4vw,44px);
+  background:linear-gradient(100deg,var(--w) 55%,var(--pnk2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:10px;
+}
+.idcard .meta{color:var(--w2);font-size:14.5px;line-height:1.75}
+.idcard .meta span{color:var(--w3)}
+.stafftitle{
+  font-family:var(--head);font-weight:700;font-size:10.5px;letter-spacing:.2em;
+  color:var(--w3);margin:30px 0 12px;
+}
+.staff{width:100%;max-width:400px;height:auto;display:block}
+.staff .ln{stroke:var(--vio);stroke-width:1;opacity:.55}
+.staff .bar{stroke:var(--vio2);stroke-width:1.6;opacity:.7}
+.staff .head{fill:var(--pnk2)}
+.staff .stem{stroke:var(--pnk2);stroke-width:1.3}
+.staff .lbl{fill:var(--w);font-family:'Arimo',sans-serif;font-size:12.5px;
+  paint-order:stroke;stroke:#000;stroke-width:3.5px;stroke-linejoin:round}
+
+/* ---------------- generic page furniture ---------------- */
+.wrap{max-width:940px;margin:0 auto}
+.ptitle{
+  font-size:clamp(26px,4vw,38px);margin-bottom:6px;
+}
+.pkicker{
+  font-family:var(--head);font-weight:700;font-size:10.5px;letter-spacing:.2em;
+  color:var(--pnk2);margin-bottom:14px;
+}
+.rule{height:1px;background:linear-gradient(90deg,var(--vio),var(--pnk),transparent);margin:22px 0 34px}
+
+/* about */
+.aboutgrid{display:grid;gap:clamp(28px,5vw,56px)}
+@media (min-width:900px){.aboutgrid{grid-template-columns:minmax(0,400px) minmax(0,1fr)}}
+.abouttext p{margin-bottom:1.15em;color:var(--w2);max-width:62ch}
+.abouttext p:first-child{color:var(--w);font-size:17.5px}
+.abouttext p:last-child{
+  margin-bottom:0;padding-top:1.15em;border-top:1px solid var(--line);
+  color:var(--w3);font-size:15px;
+}
+
+/* experience timeline */
+.tl{position:relative;padding-left:38px;margin-top:8px}
+.tl::before{
+  content:"";position:absolute;left:0;top:6px;bottom:6px;width:1px;
+  background:linear-gradient(to bottom,transparent,var(--vio) 8%,var(--pnk) 92%,transparent);
+}
+.ev{position:relative;padding-bottom:38px}
+.ev:last-child{padding-bottom:0}
+.ev .note{
+  position:absolute;left:-45px;top:9px;width:15px;height:11px;border-radius:50%;
+  background:linear-gradient(120deg,var(--vio2),var(--pnk2));
+  transform:rotate(-22deg);
+}
+.ev .note::after{
+  content:"";position:absolute;right:1px;bottom:5px;width:1.4px;height:24px;
+  background:var(--pnk2);transform:rotate(22deg);transform-origin:bottom;
+}
+.ev .when{
+  font-family:var(--head);font-weight:700;font-size:10.5px;letter-spacing:.15em;
+  color:var(--pnk2);margin-bottom:5px;
+}
+.ev h3{font-size:18px;font-weight:700;margin-bottom:2px}
+.ev .org{color:var(--w2);font-size:14.5px;margin-bottom:9px}
+.ev p.d{color:var(--w2);font-size:14.5px;max-width:62ch}
+.ev.todo h3,.ev.todo .org,.ev.todo p.d{color:var(--w3)}
+.ev.todo .note{background:var(--vio-dim);border:1px solid var(--vio)}
+
+/* resume */
+.resframe{
+  width:100%;height:min(78vh,1000px);border:1px solid var(--line);
+  border-radius:4px;background:#0a0a0a;
+}
+.reslinks{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 18px;
+  border:1px solid var(--vio2);border-radius:999px;
+  font-family:var(--head);font-weight:700;font-size:12px;letter-spacing:.08em;
+  text-decoration:none;transition:background .25s,border-color .25s;
+}
+.btn:hover{background:var(--vio-dim);border-color:var(--pnk2)}
+
+/* projects placeholder */
+.soon{
+  border:1px dashed var(--vio);border-radius:6px;
+  padding:clamp(28px,6vw,64px);text-align:center;color:var(--w3);
+  background:radial-gradient(ellipse at 50% 0%,var(--vio-dim),transparent 70%);
+}
+.soon h3{font-size:20px;color:var(--w2);margin-bottom:10px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<a id="brand" href="#" data-go="home">CLAIRE JING</a>
+
+<nav id="nav" aria-label="Main">
+  <svg id="wave" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="wg" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#5b2b8a"/>
+        <stop offset="50%" stop-color="#7a3bb5"/>
+        <stop offset="100%" stop-color="#b83a72"/>
+      </linearGradient>
+    </defs>
+    <path id="wavepath" d=""/>
+    <circle id="playhead" r="3.2" cx="-20" cy="0" opacity="0"/>
+  </svg>
+  <div id="navbtns">
+    <button data-go="about">ABOUT</button>
+    <button data-go="projects">PROJECTS</button>
+    <button data-go="resume">RESUME</button>
+    <button data-go="experience">EXPERIENCE</button>
+  </div>
+</nav>
+
+<div id="main">
+
+<!-- ============ HOME ============ -->
+<section class="page live on" id="pg-home">
+  <div class="stage">
+    <div class="viz">
+      <div id="canvasWrap"><canvas id="perc"></canvas></div>
+      <div class="control">
+        <div class="readout">
+          <span>PERCOLATION&nbsp; p&nbsp;=&nbsp;<b id="pval">0.00</b></span>
+          <span>LARGEST CLUSTER&nbsp;<b id="cval">0%</b></span>
+        </div>
+        <input id="slider" type="range" min="0" max="1" step="0.004" value="0.18"
+               aria-label="Bond probability p">
+        <p class="hint nudge" id="hint">Drag <em>p</em> upward. Somewhere near 0.5 the picture changes all at once.</p>
+      </div>
+    </div>
+
+    <aside class="idpanel">
+      <div class="idcard">
+        <h1>Claire Jing</h1>
+        <p class="meta">
+          Mathematics and Computing Major<br>
+          Georgia Institute of Technology<br>
+          <span>Atlanta, GA &middot; Junior (Graduating May 2028)</span>
+        </p>
+        <p class="stafftitle">SKILLS &middot; INTERESTS</p>
+        <svg class="staff" viewBox="0 0 400 150" role="img" aria-label="Skills and interests: Mathematical Modeling, Quantitative Finance, Options Theory, AI Infrastructure, Machine Learning">
+          <g class="ln">
+            <line x1="8" y1="20" x2="392" y2="20"/><line x1="8" y1="49" x2="392" y2="49"/>
+            <line x1="8" y1="78" x2="392" y2="78"/><line x1="8" y1="107" x2="392" y2="107"/>
+            <line x1="8" y1="136" x2="392" y2="136"/>
+          </g>
+          <line class="bar" x1="9" y1="20" x2="9" y2="136"/>
+          <g class="head">
+            <ellipse cx="30" cy="136" rx="6.4" ry="4.6" transform="rotate(-22 30 136)"/>
+            <ellipse cx="30" cy="107" rx="6.4" ry="4.6" transform="rotate(-22 30 107)"/>
+            <ellipse cx="30" cy="78"  rx="6.4" ry="4.6" transform="rotate(-22 30 78)"/>
+            <ellipse cx="30" cy="49"  rx="6.4" ry="4.6" transform="rotate(-22 30 49)"/>
+            <ellipse cx="30" cy="20"  rx="6.4" ry="4.6" transform="rotate(-22 30 20)"/>
+          </g>
+          <g class="stem">
+            <line x1="36" y1="134" x2="36" y2="114"/><line x1="36" y1="105" x2="36" y2="85"/>
+            <line x1="36" y1="76" x2="36" y2="56"/><line x1="36" y1="47" x2="36" y2="27"/>
+            <line x1="36" y1="18" x2="36" y2="-2"/>
+          </g>
+          <g class="lbl">
+            <text x="52" y="15">Mathematical Modeling</text>
+            <text x="52" y="44">Quantitative Finance</text>
+            <text x="52" y="73">Options Theory</text>
+            <text x="52" y="102">AI Infrastructure</text>
+            <text x="52" y="131">Machine Learning</text>
+          </g>
+        </svg>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="page" id="pg-about">
+  <div class="wrap">
+    <p class="pkicker">ABOUT</p>
+    <h2 class="ptitle">Finding the structure underneath</h2>
+    <div class="rule"></div>
+    <div class="aboutgrid">
+      <div class="idcard">
+        <h1>Claire Jing</h1>
+        <p class="meta">
+          Mathematics and Computing Major<br>
+          Georgia Institute of Technology<br>
+          <span>Atlanta, GA &middot; Junior (Graduating May 2028)</span>
+        </p>
+        <p class="stafftitle">SKILLS &middot; INTERESTS</p>
+        <svg class="staff" viewBox="0 0 400 150" role="img" aria-label="Skills and interests: Mathematical Modeling, Quantitative Finance, Options Theory, AI Infrastructure, Machine Learning">
+          <g class="ln">
+            <line x1="8" y1="20" x2="392" y2="20"/><line x1="8" y1="49" x2="392" y2="49"/>
+            <line x1="8" y1="78" x2="392" y2="78"/><line x1="8" y1="107" x2="392" y2="107"/>
+            <line x1="8" y1="136" x2="392" y2="136"/>
+          </g>
+          <line class="bar" x1="9" y1="20" x2="9" y2="136"/>
+          <g class="head">
+            <ellipse cx="30" cy="136" rx="6.4" ry="4.6" transform="rotate(-22 30 136)"/>
+            <ellipse cx="30" cy="107" rx="6.4" ry="4.6" transform="rotate(-22 30 107)"/>
+            <ellipse cx="30" cy="78"  rx="6.4" ry="4.6" transform="rotate(-22 30 78)"/>
+            <ellipse cx="30" cy="49"  rx="6.4" ry="4.6" transform="rotate(-22 30 49)"/>
+            <ellipse cx="30" cy="20"  rx="6.4" ry="4.6" transform="rotate(-22 30 20)"/>
+          </g>
+          <g class="stem">
+            <line x1="36" y1="134" x2="36" y2="114"/><line x1="36" y1="105" x2="36" y2="85"/>
+            <line x1="36" y1="76" x2="36" y2="56"/><line x1="36" y1="47" x2="36" y2="27"/>
+            <line x1="36" y1="18" x2="36" y2="-2"/>
+          </g>
+          <g class="lbl">
+            <text x="52" y="15">Mathematical Modeling</text>
+            <text x="52" y="44">Quantitative Finance</text>
+            <text x="52" y="73">Options Theory</text>
+            <text x="52" y="102">AI Infrastructure</text>
+            <text x="52" y="131">Machine Learning</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="abouttext">
+        <p>Hi there! I'm Claire, and I like finding structure in complex things (or, in other words, solving problems). I'm a Mathematics and Computing student at Georgia Tech, and love experimenting at the intersection of mathematical thinking and software to bring my ideas to life. Whether I'm exploring patterns in financial markets, working with mathematical structures, or building interactive models, I enjoy taking something abstract and figuring out how to make it tangible.</p>
+        <p>Currently, I'm a Software Engineering Intern at Georgia Tech Research Institute where I work on mathematical formalization and automated reasoning. I build tools for extracting mathematical structure, representing dependencies as graphs, and translating informal mathematics into formal code.</p>
+        <p>My work has taken me across a pretty wide range of problems, from modeling dynamical systems in AR/VR to studying market behavior and building quantitative trading models. Outside of my day-to-day work, I'm usually learning something new, working on a side project, or getting involved with the quant and finance community at Georgia Tech. These experiences have shaped how I approach problems: finding the structure underneath them and turning complex ideas into something useful.</p>
+        <p>In my spare time, you can usually find me singing, designing and drawing, listening to a wide variety of music, and hiking (occasionally).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="page" id="pg-projects">
+  <div class="wrap">
+    <p class="pkicker">PROJECTS</p>
+    <h2 class="ptitle">Work in progress</h2>
+    <div class="rule"></div>
+    <div class="soon">
+      <h3>This section is being built.</h3>
+      <p>Market Phase Transitions, Gen Z Market Resonance, Metro Affordability, and whatever comes next.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESUME ============ -->
+<section class="page" id="pg-resume">
+  <div class="wrap">
+    <p class="pkicker">RESUME</p>
+    <h2 class="ptitle">Claire Jing — CV</h2>
+    <div class="rule"></div>
+    <div class="reslinks">
+      <a class="btn" href="resume.pdf" target="_blank" rel="noopener">Open in new tab</a>
+      <a class="btn" href="resume.pdf" download>Download PDF</a>
+    </div>
+    <iframe class="resframe" src="resume.pdf#view=FitH" title="Claire Jing resume"></iframe>
+  </div>
+</section>
+
+<!-- ============ EXPERIENCE ============ -->
+<section class="page" id="pg-experience">
+  <div class="wrap">
+    <p class="pkicker">EXPERIENCE</p>
+    <h2 class="ptitle">A timeline</h2>
+    <div class="rule"></div>
+    <ol class="tl">
+      <li class="ev">
+        <span class="note" aria-hidden="true"></span>
+        <p class="when">JUN 2026 — PRESENT</p>
+        <h3>Software Engineering Intern</h3>
+        <p class="org">Georgia Tech Research Institute</p>
+        <p class="d">Mathematical formalization and automated reasoning. Building tools that extract mathematical structure from LaTeX theses, represent proof dependencies as graphs, and translate informal mathematics into formal code.</p>
+      </li>
+      <li class="ev">
+        <span class="note" aria-hidden="true"></span>
+        <p class="when">APR 2026 — PRESENT</p>
+        <h3>Quantitative Analyst</h3>
+        <p class="org">GT Quant Sector</p>
+        <p class="d">Managing the quant sleeve of a $2.7M endowment. Building and validating models for alpha generation, return prediction, and systematic portfolio construction.</p>
+      </li>
+      <li class="ev">
+        <span class="note" aria-hidden="true"></span>
+        <p class="when">JAN 2026 — MAY 2026</p>
+        <h3>Undergraduate Researcher</h3>
+        <p class="org">Georgia Institute of Technology</p>
+        <p class="d">Modeled dynamical systems for VR/AR, building interactive educational physics simulations and a sensory mapping engine for Apple Vision Pro.</p>
+      </li>
+      <li class="ev">
+        <span class="note" aria-hidden="true"></span>
+        <p class="when">JAN 2026 — APR 2026</p>
+        <h3>General Analyst</h3>
+        <p class="org">Undergraduate Consulting Club</p>
+        <p class="d">Built an ETL pipeline standardizing fiscal data for a startup client, and consolidated financial streams into dashboards tracking expansion KPIs.</p>
+      </li>
+      <li class="ev todo">
+        <span class="note" aria-hidden="true"></span>
+        <p class="when">PLACEHOLDER</p>
+        <h3>Role title goes here</h3>
+        <p class="org">Organization</p>
+        <p class="d">Fill this in — one or two sentences on what you did and what it changed. Duplicate this whole &lt;li&gt; block to add more entries.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+</div><!-- /main -->
+
+<footer id="contact">
+  <a href="mailto:cjing30@gatech.edu" title="cjing30@gatech.edu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6 9 7 9-7"/></svg>
+    <span class="lbl">cjing30@gatech.edu</span>
+  </a>
+  <a href="mailto:claire.r.jing@gmail.com" title="claire.r.jing@gmail.com">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M21.5 12A9.5 9.5 0 1 0 15 20.9"/><circle cx="12" cy="12" r="3.6"/><path d="M15.6 12v1.7a2.9 2.9 0 0 0 5.9 0V12"/></svg>
+    <span class="lbl">Personal</span>
+  </a>
+  <a href="https://github.com/clairerjing" target="_blank" rel="noopener" title="GitHub">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+    <span class="lbl">GitHub</span>
+  </a>
+  <a href="https://linkedin.com/in/clairejing/" target="_blank" rel="noopener" title="LinkedIn">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.5h4v11H3v-11Zm6.5 0h3.8v1.5a4.2 4.2 0 0 1 3.7-1.9c3 0 4 1.9 4 4.9v6.5h-4V15c0-1.6-.5-2.6-1.9-2.6-1.1 0-1.7.7-2 1.5-.1.3-.1.7-.1 1.1v5.5h-4v-11Z"/></svg>
+    <span class="lbl">LinkedIn</span>
+  </a>
+  <a href="tel:+14708074192" title="470-807-4192">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6.5 3h3l1.5 4.5-2 1.5a12 12 0 0 0 6 6l1.5-2 4.5 1.5v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.5 5.2 2 2 0 0 1 6.5 3Z"/></svg>
+    <span class="lbl">470-807-4192</span>
+  </a>
+</footer>
+
+<script>
+(function(){
+"use strict";
+var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* =========================================================
+   1. PERCOLATION  ->  CIRCLE OF FIFTHS
+   Bond percolation on a square lattice. Every bond gets a
+   fixed random threshold once; a bond is open when p passes
+   it, so raising the slider only ever adds edges. Union-find
+   tracks clusters. When the giant component appears, its
+   nodes migrate onto a ring and the fifths appear.
+   ========================================================= */
+var N = 22;                      // lattice is N x N sites
+var SITES = N*N;
+var cv = document.getElementById('perc');
+var ctx = cv.getContext('2d');
+var W = 0, H = 0, DPR = 1;
+
+var nodes = [], edges = [], parent = new Int32Array(SITES), csize = new Int32Array(SITES);
+var ringOrder = new Int32Array(SITES);   // site -> its slot on the ring
+var morph = new Float32Array(SITES);     // 0 = lattice, 1 = ring
+var inGiant = new Uint8Array(SITES);
+var p = 0, giantFrac = 0, ringMix = 0, openCount = 0;
+
+var FIFTHS = ['C','G','D','A','E','B','F\u266F','C\u266F','G\u266F','D\u266F','A\u266F','F'];
+
+for(var y=0;y<N;y++) for(var x=0;x<N;x++) nodes.push({gx:x, gy:y});
+for(var i=0;i<SITES;i++){
+  var x0=i%N, y0=(i/N)|0;
+  if(x0<N-1) edges.push({a:i,b:i+1,r:Math.random(),k:0.25+Math.random()*0.95});
+  if(y0<N-1) edges.push({a:i,b:i+N,r:Math.random(),k:0.25+Math.random()*0.95});
+}
+
+/* Ring slots: walk the lattice by angle around its centre so that
+   neighbours land near each other and the chords stay legible. */
+(function(){
+  var STEP = Math.round(SITES*7/12);            // a fifth, in ring slots
+  while(gcd(STEP,SITES)!==1) STEP++;            // keep the mapping a bijection
+  for(var i=0;i<SITES;i++) ringOrder[i]=(i*STEP)%SITES;
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+})();
+
+function find(a){ while(parent[a]!==a){ parent[a]=parent[parent[a]]; a=parent[a]; } return a; }
+
+function clusters(){
+  for(var i=0;i<SITES;i++){ parent[i]=i; csize[i]=1; }
+  openCount = 0;
+  for(var e=0;e<edges.length;e++){
+    var ed=edges[e];
+    if(ed.r>=p) continue;
+    openCount++;
+    var ra=find(ed.a), rb=find(ed.b);
+    if(ra!==rb){ if(csize[ra]<csize[rb]){var t=ra;ra=rb;rb=t;} parent[rb]=ra; csize[ra]+=csize[rb]; }
+  }
+  var best=0, bs=0;
+  for(var j=0;j<SITES;j++){ var r=find(j); if(csize[r]>bs){bs=csize[r];best=r;} }
+  for(var k=0;k<SITES;k++) inGiant[k] = (bs>1 && find(k)===best) ? 1 : 0;
+  giantFrac = bs/SITES;
+}
+
+function layout(){
+  var rect = cv.getBoundingClientRect();
+  DPR = Math.min(window.devicePixelRatio||1, 2);
+  W = Math.max(1, rect.width); H = Math.max(1, rect.height);
+  cv.width = W*DPR; cv.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  var pad = Math.max(46, W*0.13);
+  var span = Math.min(W,H) - pad*2;
+  var step = span/(N-1);
+  var ox = (W-span)/2, oy = (H-span)/2;
+  var cx = W/2, cy = H/2, R = span/2 + Math.max(10, W*0.028);
+  for(var i=0;i<SITES;i++){
+    var n = nodes[i];
+    n.lx = ox + n.gx*step;
+    n.ly = oy + n.gy*step;
+    var ang = (ringOrder[i]/SITES)*Math.PI*2 - Math.PI/2;
+    n.rx = cx + Math.cos(ang)*R;
+    n.ry = cy + Math.sin(ang)*R;
+  }
+  cv._cx=cx; cv._cy=cy; cv._R=R;
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  var cx=cv._cx, cy=cv._cy, R=cv._R;
+
+  for(var i=0;i<SITES;i++){
+    var n=nodes[i], m=morph[i];
+    n.x = n.lx + (n.rx-n.lx)*m;
+    n.y = n.ly + (n.ry-n.ly)*m;
+  }
+
+  /* the fifths ring fades in with the giant component */
+  if(ringMix>0.02){
+    ctx.save();
+    ctx.globalAlpha = ringMix*0.5;
+    ctx.strokeStyle = '#5b2b8a'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke();
+    ctx.globalAlpha = ringMix;
+    ctx.fillStyle = 'rgba(255,255,255,.72)';
+    ctx.font = '600 11px "Open Sauce Sans", Arimo, sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    var LR = R + Math.max(26, R*0.13);
+    for(var f=0;f<12;f++){
+      var a = (f/12)*Math.PI*2 - Math.PI/2;
+      ctx.fillText(FIFTHS[f], cx+Math.cos(a)*LR, cy+Math.sin(a)*LR);
+      ctx.beginPath();
+      ctx.arc(cx+Math.cos(a)*R, cy+Math.sin(a)*R, 2.6, 0, Math.PI*2);
+      ctx.fillStyle='#b83a72'; ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.72)';
+    }
+    ctx.restore();
+  }
+
+  /* edges — opacity falls as the graph gets dense, so a saturated
+     lattice reads as a glow rather than a scribble */
+  var dens = Math.min(1, 420/Math.max(1,openCount));
+  var aBig = Math.max(0.055, 0.52*dens);
+  var aSml = Math.max(0.10, 0.55*dens);
+  ctx.lineWidth = openCount>700 ? 0.7 : 1;
+  for(var e=0;e<edges.length;e++){
+    var ed=edges[e];
+    if(ed.r>=p) continue;
+    var A=nodes[ed.a], B=nodes[ed.b];
+    var big = inGiant[ed.a] && inGiant[ed.b];
+    var mm = (morph[ed.a]+morph[ed.b])/2;
+    ctx.beginPath();
+    ctx.moveTo(A.x,A.y);
+    if(mm>0.05){
+      /* each chord bows toward the centre by its own amount */
+      var k = mm*ed.k;
+      ctx.quadraticCurveTo(cx*k + ((A.x+B.x)/2)*(1-k), cy*k + ((A.y+B.y)/2)*(1-k), B.x, B.y);
+    } else {
+      ctx.lineTo(B.x,B.y);
+    }
+    ctx.strokeStyle = big ? 'rgba(184,58,114,'+(aBig*(0.55+0.45*mm)).toFixed(3)+')'
+                          : 'rgba(122,59,181,'+aSml.toFixed(3)+')';
+    ctx.stroke();
+  }
+
+  /* sites */
+  for(var s=0;s<SITES;s++){
+    var nd=nodes[s];
+    ctx.beginPath();
+    if(inGiant[s]){
+      ctx.arc(nd.x,nd.y, 2.1+1.1*morph[s], 0, Math.PI*2);
+      ctx.fillStyle = morph[s]>0.5 ? '#ffffff' : '#b83a72';
+    } else {
+      ctx.arc(nd.x,nd.y, 1.5, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,.26)';
+    }
+    ctx.fill();
+  }
+}
+
+var SNAP = 0.34;   /* giant-component fraction that counts as "percolated" */
+function tick(){
+  var changed=false;
+  var target = giantFrac>=SNAP ? 1 : 0;
+  for(var i=0;i<SITES;i++){
+    var want = (target && inGiant[i]) ? 1 : 0;
+    var d = want-morph[i];
+    if(Math.abs(d)>0.002){ morph[i] += d*(reduce?1:0.075); changed=true; }
+    else morph[i]=want;
+  }
+  var rt = target?1:0;
+  if(Math.abs(rt-ringMix)>0.002){ ringMix += (rt-ringMix)*(reduce?1:0.07); changed=true; }
+  else ringMix=rt;
+  draw();
+  if(changed) requestAnimationFrame(tick); else running=false;
+}
+var running=false;
+function kick(){ if(!running){ running=true; requestAnimationFrame(tick);} }
+
+var slider=document.getElementById('slider'),
+    pval=document.getElementById('pval'), cval=document.getElementById('cval');
+
+function setP(v){
+  p=v;
+  clusters();
+  pval.textContent = v.toFixed(2);
+  cval.textContent = Math.round(giantFrac*100)+'%';
+  if(giantFrac>=SNAP) reveal();
+  kick();
+}
+slider.addEventListener('input', function(){ setP(parseFloat(this.value)); });
+
+/* =========================================================
+   2. REVEAL — graph slides left, panel + nav + contact appear
+   ========================================================= */
+var revealed=false;
+function reveal(){
+  if(revealed) return;
+  revealed=true;
+  document.body.classList.add('revealed');
+  document.getElementById('hint').classList.remove('nudge');
+  /* the canvas box changes width; re-measure once the slide finishes */
+  var t0=Date.now();
+  (function settle(){
+    layout(); kick();
+    if(Date.now()-t0 < 1200) requestAnimationFrame(settle);
+  })();
+}
+/* nobody should be trapped by the toy: open up after a while regardless */
+setTimeout(function(){ if(!revealed) reveal(); }, 14000);
+
+/* =========================================================
+   3. WAVEFORM NAVIGATION
+   One Gaussian wave packet per section. Hovering raises that
+   packet's amplitude; navigating sends a playhead to it.
+   ========================================================= */
+var svg=document.getElementById('wave'), wpath=document.getElementById('wavepath'),
+    head=document.getElementById('playhead');
+var btns=[].slice.call(document.querySelectorAll('#navbtns button'));
+var amp=[10,10,10,10], ampT=[10,10,10,10];
+var SW=1200, SH=44;
+
+function sizeWave(){
+  SW = Math.max(320, window.innerWidth);
+  svg.setAttribute('viewBox','0 0 '+SW+' '+SH);
+}
+function centers(){
+  var padL = Math.min(48, SW*0.04), usable = SW - padL*2;
+  return btns.map(function(_,i){ return padL + usable*(i+0.5)/btns.length; });
+}
+function buildWave(){
+  var cs=centers(), base=SH*0.62, sigma=SW/14, d='', x;
+  for(x=0;x<=SW;x+=3){
+    var y=base;
+    y -= Math.sin(x*0.055)*1.4;                    /* idle ripple */
+    for(var i=0;i<cs.length;i++){
+      var dx=x-cs[i], g=Math.exp(-(dx*dx)/(2*sigma*sigma));
+      y -= amp[i]*g*Math.cos(dx*0.055);            /* wave packet */
+    }
+    d += (x===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(2) + ' ';
+  }
+  wpath.setAttribute('d', d);
+}
+function waveTick(){
+  var moving=false;
+  for(var i=0;i<amp.length;i++){
+    var d=ampT[i]-amp[i];
+    if(Math.abs(d)>0.15){ amp[i]+=d*0.16; moving=true; } else amp[i]=ampT[i];
+  }
+  buildWave();
+  if(moving) requestAnimationFrame(waveTick); else waveRunning=false;
+}
+var waveRunning=false;
+function waveKick(){ if(!waveRunning){waveRunning=true;requestAnimationFrame(waveTick);} }
+
+btns.forEach(function(b,i){
+  b.addEventListener('mouseenter',function(){ ampT[i]=22; waveKick(); });
+  b.addEventListener('focus',function(){ ampT[i]=22; waveKick(); });
+  b.addEventListener('mouseleave',function(){ ampT[i]= (b.getAttribute('aria-current')?16:10); waveKick(); });
+  b.addEventListener('blur',function(){ ampT[i]= (b.getAttribute('aria-current')?16:10); waveKick(); });
+  b.addEventListener('click',function(){ go(b.dataset.go, i); });
+});
+
+function runPlayhead(i, done){
+  if(reduce || i<0){ done(); return; }
+  var cs=centers(), total=wpath.getTotalLength();
+  var from=0, to=total*(cs[i]/SW), t0=null, dur=560;
+  head.setAttribute('opacity','1');
+  function step(ts){
+    if(t0===null) t0=ts;
+    var k=Math.min(1,(ts-t0)/dur), e=1-Math.pow(1-k,3);
+    var pt=wpath.getPointAtLength(from+(to-from)*e);
+    head.setAttribute('cx',pt.x); head.setAttribute('cy',pt.y);
+    if(k<1) requestAnimationFrame(step);
+    else { head.setAttribute('opacity','0'); done(); }
+  }
+  requestAnimationFrame(step);
+}
+
+/* =========================================================
+   4. PAGE ROUTER — soft cross-slide, never a hard cut
+   ========================================================= */
+var cur='home';
+function go(id, i){
+  if(id===cur) return;
+  if(typeof i==='number'){
+    btns.forEach(function(b,k){
+      if(k===i){ b.setAttribute('aria-current','page'); ampT[k]=16; }
+      else { b.removeAttribute('aria-current'); ampT[k]=10; }
+    });
+  } else {
+    btns.forEach(function(b,k){ b.removeAttribute('aria-current'); ampT[k]=10; });
+  }
+  waveKick();
+  runPlayhead(typeof i==='number'?i:-1, function(){ swap(id); });
+}
+function swap(id){
+  var out=document.getElementById('pg-'+cur), inn=document.getElementById('pg-'+id);
+  out.classList.remove('on'); out.classList.add('out');
+  setTimeout(function(){
+    out.classList.remove('out','live');
+    inn.classList.add('live');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ inn.classList.add('on'); });
+    });
+    cur=id;
+    window.scrollTo(0,0);
+    if(id==='home'){ layout(); kick(); }
+    var h=inn.querySelector('h2,h1'); if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+  }, reduce?10:280);
+}
+document.getElementById('brand').addEventListener('click',function(e){
+  e.preventDefault(); go('home');
+});
+
+/* =========================================================
+   5. BOOT
+   ========================================================= */
+function boot(){ sizeWave(); buildWave(); layout(); setP(0.18); }
+boot();
+var rt;
+window.addEventListener('resize', function(){
+  clearTimeout(rt);
+  rt = setTimeout(function(){ sizeWave(); buildWave(); layout(); kick(); }, 120);
+});
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ kick(); });
+})();
+</script>
+</body>
+</html>
