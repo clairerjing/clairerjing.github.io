@@ -251,6 +251,7 @@ body.revealed .hint{opacity:0}
   flex:0 0 0;opacity:0;overflow:hidden;min-width:0;
   transition:flex-basis 1s cubic-bezier(.2,.7,.3,1),opacity .7s .4s;
 }
+body.revealed .bio.ready{overflow:visible}
 body.revealed .bio{flex-basis:min(42%,520px);opacity:1;padding-left:clamp(16px,2.6vw,46px);padding-right:0}
 .bio h1{font-size:clamp(44px,5vw,68px);letter-spacing:-.022em}
 .bio .xline{
@@ -269,7 +270,7 @@ body.revealed .bio{flex-basis:min(42%,520px);opacity:1;padding-left:clamp(16px,2
   background:var(--glass);
 }
 .corner{margin-top:30px;font-size:21px}
-.note{margin-top:26px;max-width:470px}
+.note{position:relative;margin-top:26px;max-width:500px}
 .notebtn{
   display:inline-flex;align-items:center;justify-content:center;
   min-width:54px;height:54px;padding:0 20px;
@@ -292,16 +293,24 @@ body.revealed .bio{flex-basis:min(42%,520px);opacity:1;padding-left:clamp(16px,2
   max-width:320px;opacity:1;
 }
 .notebody{
-  margin-top:13px;padding:21px 24px;text-align:center;
+  margin-top:13px;padding:19px 22px;text-align:center;
   border:1px solid var(--line);border-radius:11px;
-  background:rgba(126,144,214,.07);backdrop-filter:blur(7px);
+  background:#151a3e;box-shadow:0 14px 42px rgba(0,0,0,.45);
 }
-.notebody p{font-size:16px;line-height:1.7;color:var(--ivory);opacity:.86}
-.notebody p + p{margin-top:11px}
+@media (min-width:900px){
+  .notebody{
+    position:absolute;z-index:6;top:calc(100% + 13px);left:0;
+    width:500px;margin-top:0;
+  }
+  /* flip above the button when there isn't room below */
+  .notebody.up{top:auto;bottom:calc(100% + 13px)}
+}
+.notebody p{font-size:14px;line-height:1.68;color:var(--ivory);opacity:.86}
+.notebody p + p{margin-top:10px}
 .notebody b{
-  display:inline;font-weight:700;font-size:18px;color:var(--hi);
+  display:inline;font-weight:700;font-size:15.5px;color:var(--hi);
 }
-.notebody i{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--hi)}
+.notebody i{font-family:var(--serif);font-style:italic;font-size:16.5px;color:var(--hi)}
 @media (max-width:900px){
   #pg-home.live{align-items:flex-start}
   .stage{flex-direction:column}
@@ -1017,6 +1026,9 @@ function reveal(){
   document.body.classList.add('revealed');
   var t0=Date.now();
   (function settle(){ layout(); kick(); if(Date.now()-t0<1400) requestAnimationFrame(settle); })();
+  setTimeout(function(){
+    var bio=document.querySelector('.bio'); if(bio) bio.classList.add('ready');
+  }, reduce?0:1150);
 }
 setTimeout(function(){ if(!revealed) reveal(); }, 15000);
 
@@ -1028,6 +1040,12 @@ setTimeout(function(){ if(!revealed) reveal(); }, 15000);
     var open = b.getAttribute('aria-expanded')==='true';
     b.setAttribute('aria-expanded', open?'false':'true');
     body.hidden = open;
+    if(!open){
+      /* measure once visible, then flip up if it would run off the bottom */
+      body.classList.remove('up');
+      var r=body.getBoundingClientRect();
+      if(r.bottom > window.innerHeight - 64) body.classList.add('up');
+    }
   });
 })();
 
