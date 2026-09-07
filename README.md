@@ -53,8 +53,13 @@ doesn't scroll. Deliberately no bright purple neon — celestial, not cyberpunk.
 - **Editorial** — Instrument Serif italic, class `.ed`. Reserved for short asides:
   *selected work*, *a trajectory*, *welcome to my corner of the internet*. Never a
   full sentence of body copy.
-- **Technical** — IBM Plex Mono, class `.tech`. Only for real technical strings:
-  `p = 0.560`, track numbers, tags, phase labels.
+- **Technical** — IBM Plex Mono, class `.tech`. Only for genuine system data:
+  `p = 0.560`, `p_c = 0.5`, phase labels, navigator track numbers, the micro-annotations.
+  Not for eyebrows, tags or UI labels — mono leaking into non-technical text is what
+  makes a page read as terminal output instead of celestial editorial.
+
+`MATHEMATICS × COMPUTING` and the three tags are sans at weight 600 with wide tracking,
+which reads technical without the schematic personality.
 
 The restraint is the point. If the italic serif starts showing up inside paragraphs
 it stops reading as elegant.
@@ -65,7 +70,11 @@ it stops reading as elegant.
 
 `#sky` is a fixed full-viewport canvas behind everything. It is not a star PNG.
 
-- Three depth layers of points, ~110 total.
+- Three depth layers of points, ~110 total, **biased toward the top-left** and confined
+  to the upper 62% of the viewport, with a per-point falloff so density fades across the
+  field rather than stopping at an edge.
+- Three enormous background arcs (radii near the viewport diagonal) at
+  `rgba(170,185,255,.035)` — you should almost not notice them.
 - Edges come from a **nearest-neighbour graph** — each point connects to its two
   closest neighbours within 190px. What reads as constellations is a proximity graph.
 - **Parallax:** each layer shifts against pointer movement in proportion to its depth.
@@ -80,44 +89,52 @@ Tuning knobs sit at the top of the `sky()` function: `LAYERS` for count and dept
 
 ## The homepage: one continuous system
 
-Three stages, no cuts. The point is that the record is *derived* from the mathematics
-rather than swapped in for it.
+Three stages, no cuts, all driven by the single slider. The point is that each state
+is *derived* from the previous one rather than swapped in for it.
 
-**Stage 1 — lattice.** Bond percolation on a 20×20 lattice. Each bond gets a fixed
-random threshold at load and opens when `p` passes it, so the slider only ever adds
-edges. Union-find tracks clusters live. Below threshold: scattered clusters.
+**DISORDER — Stage 1, lattice.** Bond percolation on a 20×20 lattice. Each bond gets
+a fixed random threshold at load and opens when `p` passes it, so the slider only ever
+adds edges. Union-find tracks clusters live.
 
-**Stage 2 — critical.** When the giant component passes 34% of the lattice (`SNAP`),
-a single ripple propagates outward — one ring, no confetti. Stranded clusters drift
-outward and fade. The connected sites migrate onto a **Lissajous curve**,
-`x = sin(3t + π/2)`, `y = sin(2t)`. Their edges stretch with them, so the graph
-becomes a luminous harmonic figure. It rotates slowly.
+**CRITICALITY — Stage 2, spiral galaxy.** When the giant component passes 34% of the
+lattice (`SNAP`), one ripple propagates outward. Stranded clusters drift outward and
+fade. The connected sites migrate onto a **logarithmic spiral**, `r = ae^{bθ}`, in two
+arms with per-node radial and angular scatter so it isn't sterile.
 
-**Stage 3 — grooves.** After the orbit holds for 2.6 seconds, the harmonic figure
-winds into concentric grooves and the rotation speeds up. Sites are allotted per
-groove in proportion to circumference so density stays even, and each groove is
-offset by the golden angle so the dots never line up into spokes. Edges fade out and
-the grooves carry the texture.
+Two details that matter:
+
+- Radius is chosen *first* and θ solved backwards as `θ = ln(r/a)/b`. Parameterising
+  by θ instead piles most sites into the core, because `r` grows exponentially.
+- Site ordering is the identity, so lattice neighbours land adjacent on the spiral and
+  the edges trace the arms. With a scattered ordering the chords cross the whole galaxy
+  and bury the structure.
+
+It rotates **differentially** — angular velocity is `0.55 + 0.45(1 − r/R)`, so inner
+sites turn faster and the arms wind, as they do in a real disc. Moving the pointer
+across the canvas perturbs the whole galaxy's rotation by up to ±0.42 rad, eased.
+
+**HARMONY — Stage 3, rings.** From `p = 0.86` to `1.0`, the arms resolve continuously
+into concentric rings and pick up a rigid spin. This is where the music idea lives now:
+an easter egg at the far end of the slider rather than the thesis of the page. Sites
+are allotted per ring in proportion to circumference, and each ring is offset by the
+golden angle so the dots never line up into spokes.
 
 Position is a double interpolation:
-`lerp(lerp(lattice, harmonic, t1), grooves, t2)` — `t1` per-node, `t2` global.
+`lerp(lerp(lattice, galaxy, t1), rings, t2)` — `t1` per-node, `t2` global and tied to `p`.
 
-Knobs, all near the top of section 2 of the script:
+Knobs, near the top of section 2 of the script:
 
 - `N = 20` — lattice size
 - `SNAP = 0.34` — how large the giant component must get
-- `2600` in `tick()` — how long the orbit holds before winding in
-- `GROOVES = 13`
-- `spin += 0.0016 + 0.0034*t2` — rotation, faster once it's a record
+- `ARMS = 2`, `TURNS = 1.9`, `BSPIRAL` — spiral geometry
+- `(p - 0.86)/0.14` in `tick()` — where the harmony stage begins
+- `gphase += 0.0020` — galaxy rotation speed
 
-The phase readout under the slider names the current state. The site opens itself
-after 15 seconds if nobody touches the slider.
+The phase readout names the state; the scale under the slider lights the active zone.
+The site opens itself after 15 seconds if nobody touches the slider.
 
 **The bio is a consequence of interacting.** It has zero width until the threshold is
-crossed, then expands. That's why the reveal reads as *the system changed and the
-interface exposed another layer* rather than *here's room for text*.
-
----
+crossed, then expands.
 
 ## Orbit navigator
 
