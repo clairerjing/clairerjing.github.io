@@ -69,7 +69,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .skip:focus{left:12px;top:12px}
 
 /* the mathematical sky sits behind everything */
-#sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 #shell{position:relative;z-index:1}
 
 /* ---------- editorial + technical registers ---------- */
@@ -81,8 +81,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   position:fixed;top:26px;left:clamp(16px,4vw,54px);z-index:41;
   display:inline-flex;align-items:center;gap:11px;
   padding:9px 20px 9px 16px;border-radius:999px;
-  border:1px solid var(--line);background:rgba(15,19,48,.62);
-  backdrop-filter:blur(9px);
+  border:1px solid var(--line);background:rgba(19,24,58,.88);
   font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.07em;
   text-decoration:none;color:var(--ivory);
   opacity:0;pointer-events:none;
@@ -203,10 +202,10 @@ body.revealed #foot{opacity:1;pointer-events:auto}
 .stage{
   display:flex;align-items:center;justify-content:center;
   width:100%;max-width:1300px;margin:0 auto;
-  padding:96px clamp(18px,4vw,54px) calc(var(--footh) + 30px);
+  padding:84px clamp(18px,4vw,54px) calc(var(--footh) + 46px);
 }
 .viz{flex:0 1 720px;min-width:0;display:flex;flex-direction:column;align-items:center}
-#canvasWrap{width:100%;max-width:700px;aspect-ratio:1/1;position:relative}
+#canvasWrap{width:100%;max-width:min(700px,64vh);aspect-ratio:1/1;position:relative}
 #perc{width:100%;height:100%;display:block}
 
 .control{width:100%;max-width:440px;margin-top:8px}
@@ -259,15 +258,39 @@ body.revealed .bio{flex-basis:min(40%,410px);opacity:1;padding-left:clamp(14px,3
   background:var(--glass);
 }
 .corner{margin-top:30px;font-size:17px}
-.explore{
-  margin-top:18px;padding:0;display:inline-flex;align-items:center;gap:9px;
-  font-family:var(--body);font-weight:600;font-size:12px;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--lav);
-  transition:color .3s;
+.note{margin-top:22px;max-width:390px}
+.notebtn{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:38px;height:38px;padding:0 13px;
+  border:1px solid var(--line);border-radius:9px;
+  background:rgba(126,144,214,.07);backdrop-filter:blur(7px);
+  color:var(--lav);
+  transition:color .3s,border-color .3s,background .3s,min-width .35s cubic-bezier(.2,.75,.25,1);
 }
-.explore span{transition:transform .3s cubic-bezier(.2,.75,.25,1)}
-.explore:hover{color:var(--hi)}
-.explore:hover span{transform:translateY(4px)}
+.notebtn .mark{font-family:var(--body);font-size:14px;font-weight:600}
+.notebtn .ask{
+  max-width:0;overflow:hidden;white-space:nowrap;opacity:0;
+  font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.06em;
+  transition:max-width .38s cubic-bezier(.2,.75,.25,1),opacity .26s;
+}
+.notebtn:hover,.notebtn:focus-visible,.notebtn[aria-expanded="true"]{
+  color:var(--hi);border-color:var(--peri);background:rgba(143,165,232,.13);
+}
+.notebtn:hover .mark,.notebtn:focus-visible .mark,.notebtn[aria-expanded="true"] .mark{display:none}
+.notebtn:hover .ask,.notebtn:focus-visible .ask,.notebtn[aria-expanded="true"] .ask{
+  max-width:260px;opacity:1;
+}
+.notebody{
+  margin-top:11px;padding:17px 19px;text-align:center;
+  border:1px solid var(--line);border-radius:11px;
+  background:rgba(126,144,214,.07);backdrop-filter:blur(7px);
+}
+.notebody p{font-size:13.5px;line-height:1.72;color:var(--lav)}
+.notebody p + p{margin-top:11px}
+.notebody b{
+  display:inline;font-weight:700;font-size:15px;color:var(--hi);
+}
+.notebody i{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--hi)}
 @media (max-width:900px){
   #pg-home.live{align-items:flex-start}
   .stage{flex-direction:column}
@@ -399,7 +422,16 @@ body.revealed .bio{flex-basis:min(40%,410px);opacity:1;padding-left:clamp(14px,3
         <span>SOFTWARE</span>
       </div>
       <p class="corner ed">welcome to my corner of the internet</p>
-      <button class="explore" data-go="about">explore <span aria-hidden="true">&#8595;</span></button>
+      <div class="note">
+        <button class="notebtn" id="notebtn" aria-expanded="false" aria-controls="notebody">
+          <span class="mark" aria-hidden="true">?</span>
+          <span class="ask">what is this structure?</span>
+        </button>
+        <div class="notebody" id="notebody" hidden>
+          <p>The interaction models a <b>percolation phase transition</b>: as the connection probability <i>p</i> increases, isolated clusters of nodes suddenly merge into a giant connected component once the critical threshold is crossed.</p>
+          <p>That network then reorganizes itself into a logarithmic spiral, the structure used to shape the galaxy, so we can see how a random graph gradually becomes an ordered geometric system.</p>
+        </div>
+      </div>
     </aside>
   </div>
 </section>
@@ -617,16 +649,22 @@ window.addEventListener('pointerleave', function(){ mx=my=-9999; });
     c.width=W*DPR; c.height=H*DPR; x.setTransform(DPR,0,0,DPR,0,0);
     pts=[];
     LAYERS.forEach(function(L){
-      for(var i=0;i<L.n;i++){
-        /* biased sampling: dense toward the top-left, thinning across
-           the upper field, so the sky has a gradient instead of an edge */
-        var bx=W*Math.pow(Math.random(),1.75);
-        var by=H*0.62*Math.pow(Math.random(),1.35);
-        var f=1-0.88*((bx/W)*0.55+(by/(H*0.62))*0.62);
-        pts.push({
-          bx:bx, by:by, d:L.d, r:L.r, ph:Math.random()*TAU,
-          f:Math.max(0.10,Math.min(1,f))
-        });
+      var i,bx,by,f;
+      /* top-left field: dense at the corner, thinning across the upper band */
+      for(i=0;i<L.n;i++){
+        bx=W*Math.pow(Math.random(),1.75);
+        by=H*0.62*Math.pow(Math.random(),1.35);
+        f=1-0.88*((bx/W)*0.55+(by/(H*0.62))*0.62);
+        pts.push({bx:bx,by:by,d:L.d,r:L.r,ph:Math.random()*TAU,
+                  f:Math.max(0.10,Math.min(1,f))});
+      }
+      /* bottom-right echo: same structure, deliberately dimmer */
+      for(i=0;i<Math.round(L.n*0.80);i++){
+        bx=W*(1-0.58*Math.pow(Math.random(),1.8));
+        by=H*(1-0.42*Math.pow(Math.random(),1.5));
+        f=1-0.72*(((W-bx)/W)*0.70+((H-by)/H)*0.78);
+        pts.push({bx:bx,by:by,d:L.d,r:L.r,ph:Math.random()*TAU,
+                  f:Math.max(0.12,Math.min(1,f))*0.74});
       }
     });
     /* nearest-neighbour graph — the "constellations" */
@@ -648,6 +686,32 @@ window.addEventListener('pointerleave', function(){ mx=my=-9999; });
   }
 
   var t=0;
+  function nebula(){
+    /* A spiral drawn *darker* than the page tone. It never reads as an
+       object — it reads as the background having depth behind the stars. */
+    var cx=W*0.78, cy=H*0.20, RR=Math.max(W,H)*0.52;
+    var gd=x.createRadialGradient(cx,cy,RR*0.05,cx,cy,RR);
+    gd.addColorStop(0,'rgba(9,12,32,.66)');
+    gd.addColorStop(0.55,'rgba(9,12,32,.34)');
+    gd.addColorStop(1,'rgba(9,12,32,0)');
+    x.fillStyle=gd; x.beginPath(); x.arc(cx,cy,RR,0,TAU); x.fill();
+
+    var b=Math.log(11)/(1.9*TAU), a=RR*0.055;
+    x.lineWidth=1.4;
+    for(var arm=0;arm<2;arm++){
+      x.beginPath();
+      for(var s=0;s<=150;s++){
+        var u=s/150, rT=RR*(0.10+0.90*u);
+        var th=Math.log(rT/a)/b + arm*Math.PI;
+        var px=cx+Math.cos(th)*rT, py=cy+Math.sin(th)*rT;
+        if(s===0) x.moveTo(px,py); else x.lineTo(px,py);
+      }
+      x.strokeStyle='rgba(8,11,30,.58)'; x.stroke();
+      /* a hair of light on the outer edge so it doesn't read as a smudge */
+      x.strokeStyle='rgba(170,185,255,.032)'; x.lineWidth=4; x.stroke();
+      x.lineWidth=1.4;
+    }
+  }
   function arcs(){
     /* three huge circles, radii well past the viewport — you should
        almost not notice them */
@@ -663,6 +727,7 @@ window.addEventListener('pointerleave', function(){ mx=my=-9999; });
   function frame(){
     t+=0.006;
     x.clearRect(0,0,W,H);
+    nebula();
     arcs();
     var i,p;
     /* pointer parallax + local gravity */
@@ -875,8 +940,9 @@ function draw(){
 
 var PHASES=['lattice','subcritical clusters','critical — giant component','spiral galaxy','harmonic rings'];
 function phaseName(){
-  if(t2>0.55) return PHASES[4];
-  if(t1>0.75) return PHASES[3];
+  if(t2>0.45) return PHASES[4];
+  if(t1>0.55) return PHASES[3];
+  if(t1>0.04) return 'reorganizing';
   if(giantFrac>=SNAP) return PHASES[2];
   if(openCount>0) return PHASES[1];
   return PHASES[0];
@@ -884,18 +950,20 @@ function phaseName(){
 
 var running=false;
 function tick(){
-  var busy=false, want1=(giantFrac>=SNAP)?1:0;
+  var busy=false;
+  var raw=Math.max(0,Math.min(1,(p-0.52)/0.26));
+  var want1=(giantFrac>=SNAP) ? raw*raw*(3-2*raw) : 0;   /* smoothstep */
   for(var i=0;i<SITES;i++){
-    var w=(want1&&inGiant[i])?1:0, d=w-morph[i];
-    if(Math.abs(d)>0.002){ morph[i]+=d*(reduce?1:0.055); busy=true; } else morph[i]=w;
+    var w=inGiant[i]?want1:0, d=w-morph[i];
+    if(Math.abs(d)>0.002){ morph[i]+=d*(reduce?1:0.10); busy=true; } else morph[i]=w;
   }
   var d1=want1-t1;
-  if(Math.abs(d1)>0.002){ t1+=d1*(reduce?1:0.055); busy=true; } else t1=want1;
+  if(Math.abs(d1)>0.002){ t1+=d1*(reduce?1:0.10); busy=true; } else t1=want1;
 
   /* harmony is the far end of the slider: the arms resolve into rings */
-  var want2 = t1>0.6 ? Math.max(0, Math.min(1,(p-0.86)/0.14)) : 0;
+  var want2 = Math.max(0, Math.min(1,(p-0.88)/0.12)) * t1;
   var d2=want2-t2;
-  if(Math.abs(d2)>0.002){ t2+=d2*(reduce?1:0.06); busy=true; } else t2=want2;
+  if(Math.abs(d2)>0.002){ t2+=d2*(reduce?1:0.09); busy=true; } else t2=want2;
 
   if(ripple>=0 && ripple<1){ ripple+=reduce?1:0.016; busy=true; }
   if(t1>0.02 && !reduce){ gphase += 0.0020; spin += 0.0030*t2; busy=true; }
@@ -920,9 +988,10 @@ var zones=[].slice.call(document.querySelectorAll('.scale span'));
 function setP(v){
   p=v; clusters();
   pval.textContent=v.toFixed(3);
-  var zone = v<0.44 ? 0 : (v<0.86 ? 1 : 2);
+  var zone = v<0.52 ? 0 : (v<0.88 ? 1 : 2);
   zones.forEach(function(s,k){ s.classList.toggle('on', k===zone); });
-  if(giantFrac>=SNAP){ if(ripple<0) ripple=0; reveal(); }
+  if(giantFrac>=SNAP && ripple<0) ripple=0;
+  if(v>=0.42) reveal();
   kick();
 }
 slider.addEventListener('input',function(){ setP(parseFloat(this.value)); });
@@ -939,6 +1008,17 @@ function reveal(){
   (function settle(){ layout(); kick(); if(Date.now()-t0<1400) requestAnimationFrame(settle); })();
 }
 setTimeout(function(){ if(!revealed) reveal(); }, 15000);
+
+/* the explainer note: hover names it, click opens it */
+(function(){
+  var b=document.getElementById('notebtn'), body=document.getElementById('notebody');
+  if(!b) return;
+  b.addEventListener('click',function(){
+    var open = b.getAttribute('aria-expanded')==='true';
+    b.setAttribute('aria-expanded', open?'false':'true');
+    body.hidden = open;
+  });
+})();
 
 /* =========================================================
    4. ORBIT NAVIGATOR + ROUTER

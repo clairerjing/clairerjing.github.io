@@ -70,11 +70,21 @@ it stops reading as elegant.
 
 `#sky` is a fixed full-viewport canvas behind everything. It is not a star PNG.
 
-- Three depth layers of points, ~110 total, **biased toward the top-left** and confined
-  to the upper 62% of the viewport, with a per-point falloff so density fades across the
-  field rather than stopping at an edge.
+- Two fields of points. The **top-left** field is dense at the corner and thins across
+  the upper band. The **bottom-right** field mirrors it at about 74% brightness, so the
+  corner has structure without competing.
+- Edges come from a nearest-neighbour graph, so what reads as constellations is a
+  proximity graph.
+- A **dark spiral nebula** behind everything at the top right, drawn *darker* than the
+  page tone (`rgba(9,12,32,.66)` core, two log-spiral arms) with a hairline of light on
+  the outer edge so it reads as depth rather than a smudge.
 - Three enormous background arcs (radii near the viewport diagonal) at
   `rgba(170,185,255,.035)` — you should almost not notice them.
+
+> **A bug worth remembering.** `<canvas>` is a *replaced element*. `position:fixed;
+> inset:0` does **not** stretch it — without explicit `width:100%; height:100%` it stays
+> at its intrinsic 300×150px. The whole sky was being drawn into a small box in the
+> top-left corner, which is exactly why the field looked like it stopped abruptly.
 - Edges come from a **nearest-neighbour graph** — each point connects to its two
   closest neighbours within 190px. What reads as constellations is a proximity graph.
 - **Parallax:** each layer shifts against pointer movement in proportion to its depth.
@@ -96,8 +106,15 @@ is *derived* from the previous one rather than swapped in for it.
 a fixed random threshold at load and opens when `p` passes it, so the slider only ever
 adds edges. Union-find tracks clusters live.
 
-**CRITICALITY — Stage 2, spiral galaxy.** When the giant component passes 34% of the
-lattice (`SNAP`), one ripple propagates outward. Stranded clusters drift outward and
+**CRITICALITY — Stage 2, spiral galaxy.** Criticality is *detected* from the cluster —
+when the giant component passes 34% of the lattice (`SNAP`), one ripple propagates
+outward — but the morph is *driven by `p`* across a wide band, `0.52 → 0.78`, smoothstepped.
+
+This split matters. The percolation transition is genuinely sharp: `giantFrac` runs from
+0.34 to 0.95 across roughly 0.12 of the slider. Tying the morph directly to cluster size
+makes the galaxy flash past, so it reads as a jump straight to the final state. Spreading
+it over a quarter of the slider gives a band you can actually sit inside and watch the
+lattice reorganize. Stranded clusters drift outward and
 fade. The connected sites migrate onto a **logarithmic spiral**, `r = ae^{bθ}`, in two
 arms with per-node radial and angular scatter so it isn't sterile.
 
@@ -113,7 +130,7 @@ It rotates **differentially** — angular velocity is `0.55 + 0.45(1 − r/R)`, 
 sites turn faster and the arms wind, as they do in a real disc. Moving the pointer
 across the canvas perturbs the whole galaxy's rotation by up to ±0.42 rad, eased.
 
-**HARMONY — Stage 3, rings.** From `p = 0.86` to `1.0`, the arms resolve continuously
+**HARMONY — Stage 3, rings.** From `p = 0.88` to `1.0`, the arms resolve continuously
 into concentric rings and pick up a rigid spin. This is where the music idea lives now:
 an easter egg at the far end of the slider rather than the thesis of the page. Sites
 are allotted per ring in proportion to circumference, and each ring is offset by the
@@ -127,14 +144,21 @@ Knobs, near the top of section 2 of the script:
 - `N = 20` — lattice size
 - `SNAP = 0.34` — how large the giant component must get
 - `ARMS = 2`, `TURNS = 1.9`, `BSPIRAL` — spiral geometry
-- `(p - 0.86)/0.14` in `tick()` — where the harmony stage begins
+- `(p - 0.52)/0.26` — the band the galaxy morph is spread across
+- `(p - 0.88)/0.12` — where the harmony stage begins
 - `gphase += 0.0020` — galaxy rotation speed
 
 The phase readout names the state; the scale under the slider lights the active zone.
 The site opens itself after 15 seconds if nobody touches the slider.
 
-**The bio is a consequence of interacting.** It has zero width until the threshold is
-crossed, then expands.
+**The bio is a consequence of interacting.** It has zero width until `p` reaches 0.42,
+then expands. That fires *before* criticality on purpose — if the panel slide and the
+galaxy morph happen on the same frame, both read as one confusing lurch.
+
+**The explainer note.** A translucent rounded button under the bio shows `?` at rest and
+widens to *what is this structure?* on hover. Clicking expands a centred panel explaining
+the percolation transition and the logarithmic spiral. Markup is in `.note`; the toggle is
+a few lines just above the router.
 
 ## Orbit navigator
 
