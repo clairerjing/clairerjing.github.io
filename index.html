@@ -166,7 +166,11 @@ body.revealed #orbit{opacity:1;pointer-events:auto}
   opacity:0;pointer-events:none;transition:opacity .8s .35s;
 }
 body.revealed #foot{opacity:1;pointer-events:auto}
-#nowview{font-family:var(--mono);font-size:13.5px;color:rgba(238,240,255,.72);letter-spacing:.05em}
+#nowview{
+  font-family:var(--mono);font-size:13.5px;color:rgba(238,240,255,.72);
+  letter-spacing:.05em;transition:opacity .35s ease;
+}
+body[data-page="home"] #nowview{opacity:0;pointer-events:none}
 #nowview b{color:var(--ivory);font-weight:400}
 #links{display:flex;gap:22px;margin-left:auto}
 #links a{color:rgba(238,240,255,.74);transition:color .22s,transform .22s}
@@ -381,7 +385,7 @@ body.revealed .bio{flex-basis:min(42%,520px);opacity:1;padding-left:clamp(16px,2
 .resframe{width:100%;height:min(76vh,980px);border:1px solid var(--line);border-radius:5px;background:var(--deep)}
 </style>
 </head>
-<body>
+<body data-page="home">
 <a class="skip" href="#main">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
 
@@ -1047,6 +1051,7 @@ function go(id,el){
     inn.classList.add('live');
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ inn.classList.add('on'); }); });
     cur=id;
+    document.body.dataset.page=id;
     window.scrollTo(0,0);
     document.querySelector('#nowview b').textContent=id;
     if(id==='home'){ layout(); kick(); }
