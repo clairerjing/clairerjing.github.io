@@ -49,12 +49,14 @@ doesn't scroll. Deliberately no bright purple neon — celestial, not cyberpunk.
 ### Typography — three registers, no more
 
 - **Display** — Open Sauce Sans 800, tight tracking. Names, page titles.
-- **Body** — Source Sans 3. Paragraphs only.
+- **Body** — Open Sauce Sans 400. Same family as the name, just unbolded, so the page
+  reads as one voice at different weights rather than two competing typefaces.
 - **Editorial** — Instrument Serif italic, class `.ed`. Reserved for short asides:
   *selected work*, *a trajectory*, *welcome to my corner of the internet*. Never a
   full sentence of body copy.
 - **Technical** — IBM Plex Mono, class `.tech`. Only for genuine system data:
-  `p = 0.560`, `p_c = 0.5`, phase labels, navigator track numbers, the micro-annotations.
+  `p = 0.700`, `p_c = 0.5`, phase labels, navigator track numbers, the micro-annotations,
+  the `now viewing` indicator.
   Not for eyebrows, tags or UI labels — mono leaking into non-technical text is what
   makes a page read as terminal output instead of celestial editorial.
 
@@ -163,7 +165,11 @@ a few lines just above the router.
 ## Orbit navigator
 
 Four satellites on the right edge, joined by a faint orbital path. At rest you see only
-dots. Hovering anywhere in the nav slides `01 ABOUT` … `04 RESUME` outward. The active
+dots and their track numbers, collapsed hard against the edge.
+
+> Labels are collapsed with `max-width:0; overflow:hidden`, **not** `opacity:0`. An
+> invisible label still occupies layout width, which made the whole rail as wide as
+> "EXPERIENCE" even at rest and pushed the dots inward over the hero copy. Hovering anywhere in the nav slides `01 ABOUT` … `04 RESUME` outward. The active
 page is a larger, brighter planet with a double glow.
 
 Adding a section: add a `<button class="sat" data-go="x">` block to `#orbit` and a
