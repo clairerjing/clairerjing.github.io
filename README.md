@@ -145,7 +145,11 @@ Knobs, near the top of section 2 of the script:
 
 - `N = 20` — lattice size
 - `SNAP = 0.34` — how large the giant component must get
-- `ARMS = 2`, `TURNS = 1.9`, `BSPIRAL` — spiral geometry
+- `ARMS = 2`, `TURNS = 2.6`, `BSPIRAL` — spiral geometry. If you change `TURNS`, change
+  the divisor in `BSPIRAL` to match or the arm count and winding stop agreeing.
+- Long chords are faded by length once the spiral forms (`lf` in the edge loop). Without
+  it the cross-galaxy edges bury the arms and the object reads as a dense cluster rather
+  than a spiral.
 - `(p - 0.52)/0.26` — the band the galaxy morph is spread across
 - `(p - 0.88)/0.12` — where the harmony stage begins
 - `gphase += 0.0020` — galaxy rotation speed
@@ -169,7 +173,13 @@ dots and their track numbers, collapsed hard against the edge.
 
 > Labels are collapsed with `max-width:0; overflow:hidden`, **not** `opacity:0`. An
 > invisible label still occupies layout width, which made the whole rail as wide as
-> "EXPERIENCE" even at rest and pushed the dots inward over the hero copy. Hovering anywhere in the nav slides `01 ABOUT` … `04 RESUME` outward. The active
+> "EXPERIENCE" even at rest and pushed the dots inward over the hero copy.
+
+Dots are pinned to the right edge (`order` puts the label and number ahead of the dot),
+so labels expand leftward instead of shoving the rail around. Each dot carries a 5px ring
+in the page colour so the orbital guide line appears to pass behind it. On hover the whole
+rail gets a soft left-fading backdrop, which keeps labels readable where they cross the
+tags. Active state is a larger filled dot with a double glow plus a brightened number. Hovering anywhere in the nav slides `01 ABOUT` … `04 RESUME` outward. The active
 page is a larger, brighter planet with a double glow.
 
 Adding a section: add a `<button class="sat" data-go="x">` block to `#orbit` and a

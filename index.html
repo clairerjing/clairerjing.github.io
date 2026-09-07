@@ -99,44 +99,49 @@ body.revealed #brand{opacity:1;pointer-events:auto}
 /* ---------- orbit navigator ---------- */
 #orbit{
   position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:40;
-  padding:20px 26px 20px 40px;
-  opacity:0;pointer-events:none;transition:opacity .8s ease;
+  padding:24px 28px 24px 44px;
+  opacity:0;pointer-events:none;
+  transition:opacity .8s ease,background .32s ease;
+}
+#orbit:hover,#orbit:focus-within{
+  background:linear-gradient(to left,rgba(15,19,48,.94) 42%,rgba(15,19,48,0));
 }
 body.revealed #orbit{opacity:1;pointer-events:auto}
 #orbit::before{  /* the orbital path the planets sit on */
-  content:"";position:absolute;right:26px;top:34px;bottom:34px;width:1px;
-  background:linear-gradient(to bottom,transparent,var(--line) 12%,var(--line) 88%,transparent);
+  content:"";position:absolute;right:33px;top:36px;bottom:36px;width:1px;
+  background:linear-gradient(to bottom,transparent,rgba(210,220,255,.30) 12%,rgba(210,220,255,.30) 88%,transparent);
 }
 .sat{
   position:relative;display:flex;align-items:center;justify-content:flex-end;
-  gap:0;height:56px;width:100%;
+  gap:0;height:70px;width:100%;
 }
 .sat .dot{
-  position:relative;z-index:2;flex:none;width:9px;height:9px;border-radius:50%;
-  background:var(--lav);opacity:.5;
+  position:relative;z-index:2;flex:none;width:11px;height:11px;border-radius:50%;
+  background:var(--lav);opacity:.72;box-shadow:0 0 0 5px var(--base);
   transition:all .35s cubic-bezier(.2,.75,.25,1);
 }
 .sat .lab{
-  display:flex;align-items:baseline;white-space:nowrap;
+  order:-2;display:flex;align-items:baseline;white-space:nowrap;
   max-width:0;overflow:hidden;opacity:0;
   transition:max-width .34s cubic-bezier(.2,.75,.25,1),opacity .3s,margin-left .34s;
 }
 .sat .num{
-  font-family:var(--mono);font-size:12px;color:var(--lav);
-  order:-1;margin-right:12px;opacity:.65;transition:color .3s,opacity .3s;
+  font-family:var(--mono);font-size:15px;color:var(--lav);
+  order:-1;margin-right:15px;opacity:.85;transition:color .3s,opacity .3s;
 }
 .sat:hover .num{color:var(--peri);opacity:1}
 .sat[aria-current="page"] .num{color:var(--peri);opacity:1}
 .sat .txt{
-  font-family:var(--display);font-weight:700;font-size:13.5px;
-  letter-spacing:.15em;color:var(--ivory);
+  font-family:var(--display);font-weight:700;font-size:15px;
+  letter-spacing:.13em;color:var(--ivory);
 }
-#orbit:hover .lab,#orbit:focus-within .lab{max-width:200px;opacity:1;margin-left:12px}
-.sat:hover .dot{opacity:1;background:var(--hi);box-shadow:0 0 12px var(--glow)}
+#orbit:hover .lab,#orbit:focus-within .lab{max-width:220px;opacity:1;margin-right:16px}
+.sat:hover .dot{opacity:1;background:var(--hi);box-shadow:0 0 0 5px var(--base),0 0 16px var(--glow)}
 .sat[aria-current="page"] .dot{
-  opacity:1;width:13px;height:13px;background:var(--hi);
-  box-shadow:0 0 16px var(--peri),0 0 30px var(--glow);
+  opacity:1;width:16px;height:16px;background:var(--hi);
+  box-shadow:0 0 0 5px var(--base),0 0 18px var(--peri),0 0 34px var(--glow);
 }
+.sat[aria-current="page"] .num{color:var(--hi);font-weight:500}
 @media (max-width:820px){
   #orbit{top:auto;bottom:var(--footh);left:0;right:0;transform:none;
     display:flex;justify-content:space-around;width:100%;padding:9px 8px;
@@ -203,7 +208,7 @@ body.revealed #foot{opacity:1;pointer-events:auto}
 .stage{
   display:flex;align-items:center;justify-content:center;
   width:100%;max-width:1560px;margin:0 auto;
-  padding:74px clamp(14px,2.4vw,34px) calc(var(--footh) + 34px);
+  padding:74px clamp(14px,7vw,150px) calc(var(--footh) + 34px) clamp(14px,2vw,28px);
 }
 .viz{flex:0 1 880px;min-width:0;display:flex;flex-direction:column;align-items:center}
 #canvasWrap{width:100%;max-width:min(880px,72vh);aspect-ratio:1/1;position:relative}
@@ -242,7 +247,7 @@ body.revealed .hint{opacity:0}
   flex:0 0 0;opacity:0;overflow:hidden;min-width:0;
   transition:flex-basis 1s cubic-bezier(.2,.7,.3,1),opacity .7s .4s;
 }
-body.revealed .bio{flex-basis:min(42%,530px);opacity:1;padding-left:clamp(16px,2.6vw,46px);padding-right:34px}
+body.revealed .bio{flex-basis:min(42%,520px);opacity:1;padding-left:clamp(16px,2.6vw,46px);padding-right:0}
 .bio h1{font-size:clamp(44px,5vw,68px);letter-spacing:-.022em}
 .bio .xline{
   margin-top:13px;font-family:var(--body);font-weight:600;
@@ -251,7 +256,8 @@ body.revealed .bio{flex-basis:min(42%,530px);opacity:1;padding-left:clamp(16px,2
 }
 .bio .lede{margin-top:22px;font-size:22px;line-height:1.5;color:var(--ivory);max-width:26ch}
 .bio .place{margin-top:16px;font-size:17.5px;color:var(--lav)}
-.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.tags{display:flex;flex-direction:column;gap:9px;margin-top:28px}
+.trow{display:flex;flex-wrap:wrap;gap:9px}
 .tags span{
   font-family:var(--body);font-weight:600;font-size:12.5px;
   letter-spacing:.11em;color:var(--lav);
@@ -268,7 +274,7 @@ body.revealed .bio{flex-basis:min(42%,530px);opacity:1;padding-left:clamp(16px,2
   color:var(--lav);
   transition:color .3s,border-color .3s,background .3s,min-width .35s cubic-bezier(.2,.75,.25,1);
 }
-.notebtn .mark{font-family:var(--body);font-size:21px;font-weight:600}
+.notebtn .mark{font-family:var(--body);font-size:23px;font-weight:400;line-height:1}
 .notebtn .ask{
   max-width:0;overflow:hidden;white-space:nowrap;opacity:0;
   font-family:var(--body);font-weight:600;font-size:15.5px;letter-spacing:.04em;
@@ -418,15 +424,13 @@ body.revealed .bio{flex-basis:min(42%,530px);opacity:1;padding-left:clamp(16px,2
       <p class="lede">I build mathematical models, software, and interactive systems.</p>
       <p class="place">Georgia Tech &middot; Atlanta</p>
       <div class="tags">
-        <span>MATHEMATICAL MODELING</span>
-        <span>QUANTITATIVE RESEARCH</span>
-        <span>OPTIONS THEORY</span>
-        <span>SOFTWARE</span>
+        <div class="trow"><span>MATHEMATICAL MODELING</span><span>SOFTWARE</span></div>
+        <div class="trow"><span>QUANTITATIVE RESEARCH</span><span>OPTIONS THEORY</span></div>
       </div>
       <p class="corner ed">welcome to my corner of the internet</p>
       <div class="note">
         <button class="notebtn" id="notebtn" aria-expanded="false" aria-controls="notebody">
-          <span class="mark" aria-hidden="true">?</span>
+          <span class="mark" aria-hidden="true">&#8592;</span>
           <span class="ask">what is this structure?</span>
         </button>
         <div class="notebody" id="notebody" hidden>
@@ -783,7 +787,7 @@ var nodes=[], edges=[], parent=new Int32Array(SITES), csize=new Int32Array(SITES
 var order=new Int32Array(SITES), morph=new Float32Array(SITES), inGiant=new Uint8Array(SITES);
 var p=0, giantFrac=0, openCount=0;
 var t1=0, t2=0, spin=0, ripple=-1, GROOVES=13;
-var ARMS=2, TURNS=1.9, BSPIRAL=Math.log(11)/(1.9*Math.PI*2);
+var ARMS=2, TURNS=2.6, BSPIRAL=Math.log(11)/(2.6*Math.PI*2);
 var gphase=0, userRot=0, userRotT=0;
 var SNAP=0.34;
 
@@ -841,8 +845,8 @@ function layout(){
     /* logarithmic spiral: r = a*e^(b*theta), two arms, scattered */
     var u=order[i]/SITES;
     var rT=R*(0.13+0.87*u);
-    var th=Math.log(rT/(R*0.085))/BSPIRAL + (i%ARMS)*(TAU/ARMS) + (n.na-0.5)*0.40;
-    n.gr=Math.min(R*1.02, rT*(0.86+0.28*n.nr));
+    var th=Math.log(rT/(R*0.085))/BSPIRAL + (i%ARMS)*(TAU/ARMS) + (n.na-0.5)*0.24;
+    n.gr=Math.min(R*1.02, rT*(0.90+0.20*n.nr));
     n.gth=th;
     var sl=slots[order[i]];
     var ang=(sl.j/sl.n)*TAU+sl.g*GOLD;
@@ -893,8 +897,10 @@ function draw(){
     var A=nodes[ed.a], B=nodes[ed.b];
     var big=inGiant[ed.a]&&inGiant[ed.b];
     var fade=1-0.88*t2;
+    var seg=Math.hypot(B.x-A.x,B.y-A.y);
+    var lf=1-t1*Math.min(1,Math.max(0,(seg-R*0.26)/(R*0.38)))*0.92;
     ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y);
-    ctx.strokeStyle = big ? 'rgba(221,230,255,'+(aBig*fade).toFixed(3)+')'
+    ctx.strokeStyle = big ? 'rgba(221,230,255,'+(aBig*fade*lf).toFixed(3)+')'
                           : 'rgba(163,171,207,'+(aSml*(1-0.8*t1)).toFixed(3)+')';
     ctx.stroke();
   }
