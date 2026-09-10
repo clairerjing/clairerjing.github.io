@@ -1,4 +1,4 @@
-# clairerjing.com
+# clairerjing.github.io
 
 Hi! I'm Claire 👋
 
@@ -34,6 +34,6 @@ A lot of the fun was figuring out how to turn mathematical ideas into interactio
 
 The site is best experienced by playing with it rather than reading about it.
 
-→ clairerjing.com
+→ clairerjing.github.io
 
 Thanks for stopping by :)
